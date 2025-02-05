@@ -34,6 +34,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import static com.andrei1058.bedwars.BedWars.nms;
 import static com.andrei1058.bedwars.BedWars.plugin;
@@ -43,6 +44,13 @@ import static com.andrei1058.bedwars.BedWars.plugin;
  * potion or when the potion is gone. It is required because it is related to scoreboards.
  */
 public class InvisibilityPotionListener implements Listener {
+
+    // 获取配置文件
+    FileConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "expansion.yml"));
+
+    // 读取配置项
+    boolean hideArmor = config.getBoolean(invisibility.hide-armor, true);
+    boolean hideTeamInfo = config.getBoolean(invisibility.hide-team-info, true);
 
     @EventHandler
     public void onPotion(@NotNull PlayerInvisibilityPotionEvent e) {
@@ -85,11 +93,15 @@ public class InvisibilityPotionListener implements Listener {
                             //
                             for (Player p1 : e.getPlayer().getWorld().getPlayers()) {
                                 if (a.isSpectator(p1)) {
-                                    // hide player armor to spectators
-                                    nms.hideArmor(e.getPlayer(), p1);
+                                    if (hideArmor) {
+                                        // hide player armor to spectators隐藏盔甲
+                                        nms.hideArmor(e.getPlayer(), p1);
+                                    }
                                 } else if (t != a.getTeam(p1)) {
-                                    // hide player armor to other teams
-                                    nms.hideArmor(e.getPlayer(), p1);
+                                    if (hideTeamInfo) {
+                                        // hide player armor to other teams隐藏队伍信息
+                                        nms.hideArmor(e.getPlayer(), p1);
+                                    }
                                 }
                             }
                             // call custom event
